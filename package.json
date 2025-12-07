@@ -1,31 +1,34 @@
 {
-  "name": "sample-nextjs-auth",
+  "name": "auth-nextjs-prisma",
   "version": "0.1.0",
-  "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint",
+    "db:seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@libsql/client": "0.8.1",
+    "@prisma/adapter-libsql": "^7.1.0",
     "@prisma/client": "7.1.0",
     "bcrypt-ts": "^8.0.0",
     "next": "16.0.7",
     "next-auth": "5.0.0-beta.30",
-    "prisma": "^7.1.0",
     "react": "^19.2.1",
     "react-dom": "^19.2.1"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
-    "autoprefixer": "^10.4.22",
+    "dotenv": "^17.2.3",
     "eslint": "^9.39.1",
     "eslint-config-next": "16.0.7",
-    "postcss": "^8.5.6",
+    "prisma": "^7.1.0",
     "tailwindcss": "^4.1.17",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
 }

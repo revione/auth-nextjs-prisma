@@ -1,67 +1,56 @@
-### Next.js 14 + Next-Auth
+# Sample Next.js Auth
 
-In this project, we will explore the implementation of authentication and authorization in a Next.js 14 application using Next-Auth. We will cover important aspects such as installing dependencies, using Prisma for data management, and paying attention to the auth.ts and middleware.ts files.
+Authentication playground built with Next.js 16 (App Router) and NextAuth v5 using Credentials, Prisma, and libSQL/SQLite. Includes login, register, and password reset flows plus a protected route to test redirects and sign-out.
 
-Take a look [onlie](https://sample-nextjs-auth.vercel.app)
+## Stack
+- Next.js 16 + TypeScript (App Router)
+- NextAuth v5 with `Credentials` provider
+- Prisma + `@prisma/adapter-libsql` (SQLite locally or LibSQL/Turso)
+- Password hashing with `bcrypt-ts`
+- Tailwind CSS 4 and custom styles in `src/app/globals.css`
 
-## What is this project about?
+## Requirements
+- Node 20+ and pnpm
+- Environment variables in `.env`
 
-This project is an educational guide that shows you how to integrate Next.js with Next-Auth to manage authentication and authorization in a web application. The implementation you will see here is one of the many ways you can achieve this goal.
+## Getting started
+1) Install dependencies  
+`pnpm install`
 
-## Installing Dependencies
+2) Copy env vars and set a secret  
+`cp env.example .env`  
+Update `AUTH_SECRET` (e.g. `openssl rand -base64 32`). `DATABASE_URL` defaults to `file:./prisma/dev.db` but can point to a LibSQL/Turso endpoint.
 
-First, make sure you have Node.js installed on your system. Then, you can install the dependencies by running one of the following commands in your terminal:
+3) Generate Prisma client and create the database  
+`pnpm prisma generate`  
+`pnpm prisma db push`
 
-```bash
-npm install
-# or
-pnpm install
-```
+4) Seed sample data  
+`pnpm db:seed`
 
-## Environment Variables
+5) Run locally  
+`pnpm dev` → http://localhost:3000
 
-Before running the application, make sure to create a .env.local file based on the provided .env.local.example. You must provide your own AUTH_SECRET value, which is required by Next-Auth for secure authentication.
+## Flows and routes
+- `/` landing with quick links
+- `/login` credentials sign-in
+- `/register` user registration
+- `/reset-password` change password
+- `/protected` guarded route; middleware in `src/proxy.ts` redirects when unauthenticated
 
-Here's an example .env.local file:
+## Seed users
+- `hanna.muller@example.com` / `password123`
+- `carlos.rodriguez@example.com` / `password123`
 
-```plaintext
-# prisma locations database
-DATABASE_URL="file:./db/dev.db"
+## Quick structure
+- `auth.ts`: NextAuth config and credentials provider
+- `src/actions/*`: Server Actions for login, register, reset
+- `lib/prisma.ts`: Prisma client with libSQL adapter
+- `prisma/schema.prisma`: `User` model
+- `src/app/**`: views and forms for the flows
 
-# Auth secret required for next-auth
-AUTH_SECRET=your_auth_secret_here
-```
-
-Replace your_auth_secret_here with your own secret key. This ensures secure authentication for your Next.js application.
-
-## Using Prisma
-
-Prisma is a powerful tool that helps us manage the database easily. You can initiate a migration by running:
-
-```bash
-npx prisma migrate dev --name init
-```
-
-Additionally, to visualize and manage the database, you can use Prisma Studio by running:
-
-```bash
-npx prisma studio
-```
-
-## auth.ts File
-
-The auth.ts file contains specific configuration for authentication, which is then used in the Next.js middleware. This file defines the authentication logic, including handling authentication providers and credential validation.
-
-## middleware.ts File
-
-The middleware.ts file imports the authentication configuration defined in auth.ts and uses it as middleware to process authorization before the protected page is rendered.
-
-## Actions
-
-In the app/actions directory, you will find a series of files containing functions to perform various actions, such as authenticating users, registering new users, and resetting passwords. These actions are handled on the server and used from the client-side files.
-
-## Pages
-
-Finally, in the app/pages directory, you will find the different pages of the application, including the login form, registration form, password reset page, and the protected page that requires authentication to access.
-
-We hope this guide is helpful and helps you better understand how to implement authentication and authorization in your Next.js projects. If you have any questions, feel free to consult the official documentation of Next.js and Next-Auth or leave a comment in the GitHub repository. Happy coding! 🚀
+## Useful scripts
+- `pnpm dev` start in development
+- `pnpm build` / `pnpm start` production build & serve
+- `pnpm lint` run ESLint
+- `pnpm db:seed` populate demo users
