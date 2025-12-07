@@ -11,11 +11,27 @@ const globalForPrisma = globalThis as unknown as {
   prismaAdapter: PrismaLibSql | undefined
 }
 
-const adapter = globalForPrisma.prismaAdapter ?? new PrismaLibSql({ url: databaseUrl })
+const isPostgres = databaseUrl.toLowerCase().startsWith('postgres')
+const isLibSql =
+  databaseUrl.toLowerCase().startsWith('libsql') || databaseUrl.toLowerCase().startsWith('file:')
 
-export const prisma = globalForPrisma.prisma ?? new PrismaClient({ adapter, log: ['query', 'error', 'warn'] })
+const adapter =
+  !isPostgres && isLibSql
+    ? globalForPrisma.prismaAdapter ?? new PrismaLibSql({ url: databaseUrl })
+    : undefined
+
+// Optional: Prisma Accelerate / Data Proxy. Not required for local drivers.
+const accelerateUrl = process.env.PRISMA_DATABASE_URL
+
+export const prisma =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    ...(adapter ? { adapter } : {}),
+    ...(accelerateUrl ? { accelerateUrl } : {}),
+    log: ['query', 'error', 'warn'],
+  })
 
 if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = prisma
-  globalForPrisma.prismaAdapter = adapter
+  if (adapter) globalForPrisma.prismaAdapter = adapter
 }
